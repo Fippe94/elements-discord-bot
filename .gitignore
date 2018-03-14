@@ -58,3 +58,4 @@ typings/
 .env
 
 auth.json
+config.json

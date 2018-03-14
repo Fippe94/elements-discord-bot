@@ -11,7 +11,7 @@ const emoji_moneybag = 'ccebe0b729ff7530c5e37dbbd9f9938c';
 const prefix = "!";
 
 client.on('ready', evt => {
-    console.log(`Logged in as ${client.user.tag}!`);
+    console.log('Logged in as ' + client.user.tag + '!');
 });
 
 client.on('message', message => {
