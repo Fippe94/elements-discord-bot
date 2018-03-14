@@ -11,7 +11,7 @@ const emoji_dollar = '8ed2cc6920647efb9ed69ccc429fcee4';
 const emoji_moneybag = 'ccebe0b729ff7530c5e37dbbd9f9938c';
 const prefix = "!";
 
-client.on('ready', function (evt) {
+client.on('ready', evt => {
     console.log(`Logged in as ${client.user.tag}!`);
 });
 
@@ -45,7 +45,6 @@ client.on('message', message => {
                     request.post({
                         url: base_url + "code.php",
                         form: {
-                            discord_id: message.author.id,
                             forum_username: forum_username,
                         }, 
                     }, (err, res, body) => { 
@@ -113,7 +112,7 @@ client.on('message', message => {
                 type: 'check_score',
                 user_id: message.author.id,
             },
-        }, function(check_score_err, check_score_res, check_score_body) {
+        }, (check_score_err, check_score_res, check_score_body) => {
             if (check_score_err) {
                 throw check_score_err;
             }
@@ -130,7 +129,7 @@ client.on('message', message => {
                         user_id: message.author.id,
                         amount: 1,
                     },
-                }, function(add_score_err, add_score_res, add_score_body) {
+                }, (add_score_err, add_score_res, add_score_body) => {
                     if (add_score_err) {
                         throw add_score_err;
                     }
@@ -149,7 +148,7 @@ client.on('message', message => {
                         user_id: message.author.id,
                         amount: 10,
                     },
-                }, function(add_score_err, add_score_res, add_score_body) {
+                }, (add_score_err, add_score_res, add_score_body) => {
                     if (add_score_err) {
                         throw add_score_err;
                     }
@@ -194,17 +193,17 @@ client.on('message', message => {
                             form: {
                                 type: 'get_top_scores',
                             }
-                        }, function(top_scores_err, top_scores_res, top_scores_body) {
+                        }, (top_scores_err, top_scores_res, top_scores_body) => {
                             if (top_scores_err) {
                                 throw top_scores_err;
                             }
                             
-                            let scoreboard = '```\n';
+                            let results = JSON.parse(top_scores_body);
+                            let scoreboard = '';
                             for (let idx in results) {
                                 scoreboard += '[' + (idx + 1) + '] ' + client.users.get("id", results[idx].userId).username + '\n';
                                 scoreboard += '    > Electrum: ' + results[idx].points + '\n';
                             }
-                            scoreboard += '```';
                             
                             message.reply({
                                 embed: { 
@@ -224,6 +223,32 @@ client.on('message', message => {
                     
                     // Display user's current score
                     case 'wallet':
+                        if (message.content.length > 8) { // Get specified user's wallet 
+                            let username = message.content.substring(8);
+                        } else { // Get Author's Wallet                
+                            request.post({
+                                url: base_url + 'score.php',
+                                form: {
+                                    type: 'get_score'
+                                }
+                            }, (wallet_err, wallet_res, wallet_body) => {
+                                if (wallet_err) {
+                                    throw wallet_err;
+                                }
+                                
+                                let results = JSON.parse(wallet_body);
+                                
+                                message.reply({
+                                    embed: {
+                                        color: 3447003,
+                                        fields: [{
+                                            name: '![avatar](' + message.author.avatarURL + ') ' + message.author.username,
+                                            value: '**Balance:** ' + results.score + ' Electrum',
+                                        }]
+                                    }
+                                });
+                            });
+                        }
                         break;
                 }
             }
@@ -231,7 +256,7 @@ client.on('message', message => {
     }
 });
 
-client.login(auth.token);
+client.login(process.env.auth_token);
 
 let data = [
     { 
@@ -249,7 +274,7 @@ let data = [
         'last': '',
     },
 ];
-setInterval(function() {
+setInterval(() => {
     let author = '';
     let profile = '';
     let forum = '';
@@ -260,8 +285,8 @@ setInterval(function() {
 
     /*
     // Turning potato off during testing of bot
-    request(data[0].url, function(err, res, body) { processPotato(0, body); })
-    request(data[1].url, function(err, res, body) { processPotato(1, body); })
+    request(data[0].url, (err, res, body) => { processPotato(0, body); })
+    request(data[1].url, (err, res, body) => { processPotato(1, body); })
     */
 }, 10000);
 
