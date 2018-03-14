@@ -51,16 +51,10 @@ client.on('message', message => {
                     }, (err, res, body) => { 
                         if (body == 'success') {
                             // Respond with confirmation
-                            bot.sendMessage({
-                                to: message.channel.id,
-                                message: 'A Forum PM has been sent to the specified user. Respond with `!verify <code>` using the code from the Forum PM to link your Discord account with your Forum Profile.',
-                            });
+                            message.reply('A Forum PM has been sent to the specified user. Respond with `!verify <code>` using the code from the Forum PM to link your Discord account with your Forum Profile.');
                         } else {
                             // Respond with error
-                            bot.sendMessage({
-                                to: message.channel.id,
-                                message: 'Something went wrong. Please check the username you entered and try again.',
-                            });
+                            message.reply('Something went wrong. Please check the username you entered and try again.');
                         }
                     });
                     
@@ -80,16 +74,10 @@ client.on('message', message => {
                     }, (err, res, body) => { 
                         if (body == 'success') {
                             // Respond with confirmation
-                            bot.sendMessage({
-                                to: message.channel.id,
-                                message: 'Hurray! You have successfully linked your Discord Account with your Forum Profile.',
-                            });
+                            message.reply('Hurray! You have successfully linked your Discord Account with your Forum Profile.');
                         } else {
                             // Respond with error
-                            bot.sendMessage({
-                                to: message.channel.id,
-                                message: 'Something went wrong. Please check the code you entered and try again.',
-                            });
+                            message.reply('Something went wrong. Please check the code you entered and try again.');
                         }
                     });
                     
@@ -105,16 +93,10 @@ client.on('message', message => {
                     }, (err, res, body) => { 
                         if (body == 'success') {
                             // Respond with confirmation
-                            bot.sendMessage({
-                                to: message.channel.id,
-                                message: 'No worries! Your Discord Account is already linked to your Forum Profile.',
-                            });
+                            message.reply('No worries! Your Discord Account is already linked to your Forum Profile.');
                         } else {
                             // Respond with error
-                            bot.sendMessage({
-                                to: message.channel.id,
-                                message: 'Sorry! Your Discord Account is not yet linked to your Forum Profile. Use `!link <forum_username>` to get started.',
-                            });
+                            message.reply('Sorry! Your Discord Account is not yet linked to your Forum Profile. Use `!link <forum_username>` to get started.');
                         }
                     });
                     
