@@ -1,6 +1,6 @@
 const { Command, Middleware } = require('yamdbf');
 const { resolve, expect } = Middleware;
-const utils = require('./utils');
+const utils = require('../utils');
 
 module.exports = class extends Command {
 	constructor() {
@@ -19,6 +19,7 @@ module.exports = class extends Command {
                 message.reply('No worries! Your Discord Account is already linked to your Forum Profile.');
             } else {
                 // Respond with error
+                console.log(body);
                 message.reply('Sorry! Your Discord Account is not yet linked to your Forum Profile. Use `!link <forum_username>` to get started.');
             }
         });
