@@ -1,9 +1,9 @@
 const { Client } = require('yamdbf');
-const module_exists = require('module_exists');
+const utils = require('./utils');
 const path = require('path');
 
 const config = (
-    module_exists('./config.json') ?
+    utils.module_exists('./config.json') ?
         require('./config.json') :
         {
             token: process.env.token,
