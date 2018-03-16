@@ -2,7 +2,8 @@ const request = require('request');
 
 module.exports = class {
     constructor() { 
-        this.base_url = 'http://elementscommunity.org/tools/discord-bot/';
+        //this.base_url = 'http://elementscommunity.org/tools/discord-bot/';
+        this.base_url = 'http://4c5be3f1.ngrok.io/elementscommunity.org/tools/discord-bot/';
     }
     
     static module_exists = name => {
