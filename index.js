@@ -23,7 +23,7 @@ class CustomClient extends Client {
 		});
 
 		this.once('pause', async () => {
-			await this.setDefaultSetting('prefix', '!');
+			await this.setDefaultSetting('prefix', '~');
 			this.continue();
 		});
 
