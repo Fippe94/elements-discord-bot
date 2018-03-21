@@ -25,7 +25,7 @@ module.exports = class extends Command {
             body => {
                 if (body == 'success') {
                     // Respond with confirmation
-                    message.reply('A Forum PM has been sent to the specified user. Respond with `!verify <code>` using the code from the Forum PM to link your Discord account with your Forum Profile.');
+                    message.reply('A Forum PM has been sent to the specified user. Respond with `~verify <code>` using the code from the Forum PM to link your Discord account with your Forum Profile.');
                 } else {
                     // Respond with error
                     console.log(body);

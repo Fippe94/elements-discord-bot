@@ -20,7 +20,7 @@ module.exports = class extends Command {
             } else {
                 // Respond with error
                 console.log(body);
-                message.reply('Sorry! Your Discord Account is not yet linked to your Forum Profile. Use `!link <forum_username>` to get started.');
+                message.reply('Sorry! Your Discord Account is not yet linked to your Forum Profile. Use `~link <forum_username>` to get started.');
             }
         });
 	}
