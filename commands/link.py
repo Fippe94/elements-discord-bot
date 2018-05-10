@@ -18,7 +18,7 @@ class Link(BaseCommand):
         r = requests.post(url, data)
         
         if r.text == 'success':
-            msg = 'A Forum PM has been sent to the specified user. Respond with `~verify <code>` using the code from the Forum PM to link your Discord account with your Forum Profile.'
+            msg = 'A Forum PM has been sent to the specified user. Respond with `' + settings.COMMAND_PREFIX + 'verify <code>` using the code from the Forum PM to link your Discord account with your Forum Profile.'
         elif r.text == 'linked':
             msg = 'You are already linked to this account.'
         else:
