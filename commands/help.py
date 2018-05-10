@@ -3,7 +3,7 @@ from commands.base_command import BaseCommand
 
 # This is a convenient command that automatically generates a helpful
 # message showing all available commands
-class Commands(BaseCommand):
+class Help(BaseCommand):
 
     def __init__(self):
         description = "Displays this help message"
