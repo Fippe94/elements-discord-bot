@@ -1,11 +1,15 @@
 aiohttp==1.0.5
 APScheduler==3.5.1
 async-timeout==2.0.0
+certifi==2018.4.16
 chardet==3.0.4
 discord.py==0.16.12
 emoji==0.5.0
+idna==2.6
 multidict==3.3.2
 pytz==2018.3
+requests==2.18.4
 six==1.11.0
 tzlocal==1.5.1
+urllib3==1.22
 websockets==3.4
