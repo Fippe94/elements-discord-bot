@@ -15,6 +15,11 @@ bot.PREFIX = '~';
 // Client is ready!
 bot.on('ready', function() {
   console.log('Logged in as %s - %s\n', bot.username, bot.id);
+  bot.setPresence({ 
+    'game': { 
+      'name': bot.PREFIX + "help | Taters gonna tate" 
+    } 
+  });
 });
 
 // Message received
