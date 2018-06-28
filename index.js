@@ -271,3 +271,114 @@ function getDiscordNickname(discord_id) {
   
   return false;
 }
+
+/**
+  * AP & TP
+**/
+
+let data = [
+  { 
+    'room_id': '449007294244716544',
+    'url': 'http://elementscommunity.org/forum/index.php?action=.xml;sa=recent;limit=1;type=atom',
+    'title': 'Latest Post',
+    'color': 3447003,
+    'last': '',
+  },
+  { 
+    'room_id': '426768975066562571',
+    'url': 'http://elementscommunity.org/forum/index.php?action=.xml;sa=recent;limit=1;type=atom;boards=77',
+    'title': 'Latest Tourney Post',
+    'color': 15158332,
+    'last': '',
+  },
+];
+setInterval(function() {
+  let author = '';
+  let profile = '';
+  let forum = '';
+  let forumid = '';
+  let title = '';
+  let forumlink = '';
+  let line_text = '';
+
+  request(data[0].url, function(err, res, body) { processPotato(0, body); })
+  request(data[1].url, function(err, res, body) { processPotato(1, body); })
+}, 10000);
+
+function removeCDATA(str) {
+  return str.replace('<![CDATA[', '').split('').reverse().join('').replace('>]]', '').split('').reverse().join('');
+}
+
+function processPotato(idx, body) {
+  let d = data[idx];
+  let xmlDoc = xml.parse(body);
+  for (let xml_tag of xmlDoc) {
+    if (xml_tag.tagName != 'feed') {
+      continue;
+    }
+
+    for (feed_tag of xml_tag.childNodes) {
+      if (feed_tag.tagName != 'entry') {
+          continue;
+      }
+
+      for (entry_tag of feed_tag.childNodes) {
+        switch(entry_tag.tagName) {
+          case 'link':
+            link = entry_tag.attributes.href;
+            break;
+          case 'category':
+            for (let cat_tag of entry_tag.childNodes) {
+              if (cat_tag.tagName == 'label') {
+                forum = removeCDATA(cat_tag.innerXML);
+              } else if (cat_tag.tagName == 'term') {
+                forumid = removeCDATA(cat_tag.innerXML);
+              }
+            }
+            break;
+          case 'author':
+            for (let auth_tag of entry_tag.childNodes) {
+              if (auth_tag.tagName == 'name') {
+                author = removeCDATA(auth_tag.innerXML);
+              } else if (auth_tag.tagName == 'uri') {
+                profile = removeCDATA(auth_tag.innerXML);
+              }
+            }
+            break;
+          case 'title':
+            title = removeCDATA(entry_tag.innerXML);
+            break;
+        }
+      }
+    }
+  }
+  
+  if (d.last == link) {
+    return;
+  }
+
+  data[idx].last = link;
+
+  forumlink = "http://elementscommunity.org/forum/?board="+forumid;
+
+  if (title.length > 45) {
+    title = title.substring(0, 45) + '...';
+  }
+
+  line_text = 'The latest forum post is [' + title + '](' + link + ') from [' + author + '](' + profile + ') in [' + forum + '](' + forumlink + ').';
+  
+  // TODO: Add potato phrases
+  // line_text += phrase;
+
+  bot.sendMessage({
+    to: d.room_id,
+    message: '',
+    embed: {
+      color: d.color,
+      fields: [{ 
+        name: d.title, 
+        value: line_text 
+      }]
+    },
+  });
+}
