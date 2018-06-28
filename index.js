@@ -1,6 +1,7 @@
 // Libraries
 const Discord = require('discord.io');
 const request = require('request');
+const xml = require('xml-parse');
 
 // Create client
 const bot = new Discord.Client({
@@ -278,14 +279,14 @@ function getDiscordNickname(discord_id) {
 
 let data = [
   { 
-    'room_id': '449007294244716544',
+    'room_id': '449007294244716544', // /* UTA-Test-bot #general */ '444186287671607298'
     'url': 'http://elementscommunity.org/forum/index.php?action=.xml;sa=recent;limit=1;type=atom',
     'title': 'Latest Post',
     'color': 3447003,
     'last': '',
   },
   { 
-    'room_id': '426768975066562571',
+    'room_id': '461917004735971328', // /* UTA-Test-bot #tournaments */ '426768975066562571',
     'url': 'http://elementscommunity.org/forum/index.php?action=.xml;sa=recent;limit=1;type=atom;boards=77',
     'title': 'Latest Tourney Post',
     'color': 15158332,
