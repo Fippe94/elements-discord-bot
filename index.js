@@ -286,7 +286,7 @@ let data = [
     'last': '',
   },
   { 
-    'room_id': '461917004735971328', // /* UTA-Test-bot #tournaments */ '426768975066562571',
+    'room_id': '426768975066562571', // /* UTA-Test-bot #tournaments */ '461917004735971328',
     'url': 'http://elementscommunity.org/forum/index.php?action=.xml;sa=recent;limit=1;type=atom;boards=77',
     'title': 'Latest Tourney Post',
     'color': 15158332,
