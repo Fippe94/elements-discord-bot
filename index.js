@@ -279,7 +279,7 @@ function getDiscordNickname(discord_id) {
 
 let data = [
   { 
-    'room_id': '449007294244716544', // /* UTA-Test-bot #general */ '444186287671607298'
+    'room_id': '432228551786364938', // /* UTA-Test-bot #general */ '444186287671607298'
     'url': 'http://elementscommunity.org/forum/index.php?action=.xml;sa=recent;limit=1;type=atom',
     'title': 'Latest Post',
     'color': 3447003,
