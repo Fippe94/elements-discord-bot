@@ -68,12 +68,13 @@ bot.on('message', function(username, user_id, channel_id, message, event) {
           },
           'description': 'Here are the commands I recognize\n\n━━━━━━━━━━━━━━━━━━━━━━━',
           'footer': {
-            'text': 'Last update: Friday Jun 22, 2018'
+            'text': 'Last update: Sunday Mar 10, 2019'
           },
           'fields': [
             {
               'name': 'General',
-              'value': '\n`' + bot.PREFIX + 'help` Display this help message\n\n━━━━━━━━━━━━━━━━━━━━━━━'
+              'value': '\n`' + bot.PREFIX + 'help` Display this help message\n\n' +
+                '`' + bot.PREFIX + 'card <card name>` Display an Elements card\n\n━━━━━━━━━━━━━━━━━━━━━━━'
             },
             {
               'name': 'Discord <-> Forum Link',
@@ -88,6 +89,19 @@ bot.on('message', function(username, user_id, channel_id, message, event) {
       });
       break;
     
+    case "card":
+      card_name = args.join('');
+
+      bot.sendMessage({
+        to: channel_id,
+        message: {
+          "image": {
+            "url": 'http://elementscommunity.org/images/Cards/' + card_name + '.png'
+          }
+        }
+      });
+      break;
+
     /**
       * DISCORD-FORUMS LINK
     **/
