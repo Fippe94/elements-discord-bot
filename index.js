@@ -82,8 +82,7 @@ bot.on('message', function(username, user_id, channel_id, message, event) {
           'fields': [
             {
               'name': 'General',
-              'value': '\n`' + bot.PREFIX + 'help` Display this help message\n\n' +
-                '`' + bot.PREFIX + 'card <card name>` Display an Elements card\n\n━━━━━━━━━━━━━━━━━━━━━━━'
+              'value': '\n`' + bot.PREFIX + 'help` Display this help message\n\n━━━━━━━━━━━━━━━━━━━━━━━'
             },
             {
               'name': 'Discord <-> Forum Link',
@@ -93,6 +92,10 @@ bot.on('message', function(username, user_id, channel_id, message, event) {
                 '`' + bot.PREFIX + 'whois <discord_nickname>` Returns the Forum Profile associated with this Discord user\n\n' + 
                 '`' + bot.PREFIX + 'lookup <forum_username>` Returns the Discord Username associated with this Forum Profile\n\n━━━━━━━━━━━━━━━━━━━━━━━'
             },
+            {
+              'name': 'Elements',
+              'value': '\n`' + bot.PREFIX + 'card <card name>` Display an Elements card\n\n━━━━━━━━━━━━━━━━━━━━━━━'
+            }
           ],
         }
       });
@@ -103,7 +106,7 @@ bot.on('message', function(username, user_id, channel_id, message, event) {
 
       bot.sendMessage({
         to: channel_id,
-        message: {
+        embed: {
           "image": {
             "url": 'http://elementscommunity.org/images/Cards/' + card_name + '.png'
           }
