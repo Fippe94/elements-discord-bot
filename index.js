@@ -133,7 +133,7 @@ bot.on('message', function(username, user_id, channel_id, message, event) {
         let message = '';
         if (body == 'success') {
           // Respond with confirmation
-          message = 'A Forum PM has been sent to the specified user. Respond with `!verify <code>` using the code from the Forum PM to link your Discord account with your Forum Profile.';
+          message = 'A Forum PM has been sent to the specified user. Respond with `' + bot.PREFIX + 'verify <code>` using the code from the Forum PM to link your Discord account with your Forum Profile.';
         } else {
           // Respond with error
           message = 'Something went wrong. Please check the username you entered and try again.';
@@ -194,7 +194,7 @@ bot.on('message', function(username, user_id, channel_id, message, event) {
           message = 'No worries! Your Discord Account is already linked to your Forum Profile.';
         } else {
           // Respond with error
-          message = 'Sorry! Your Discord Account is not yet linked to your Forum Profile. Use `!link <forum_username>` to get started.';
+          message = 'Sorry! Your Discord Account is not yet linked to your Forum Profile. Use `' + bot.PREFIX + 'link <forum_username>` to get started.';
           
           // Log error
           console.log('linked - ' + username + ' (' + user_id + ')');
@@ -217,7 +217,7 @@ bot.on('message', function(username, user_id, channel_id, message, event) {
       if (!discord_id) {
         bot.sendMessage({
           to: channel_id,
-          message: 'Discord nickname not found. Please check your spelling and try again.'
+          message: 'Discord Username not found. Please check your spelling and try again.'
         });
         break;
       }
@@ -257,7 +257,7 @@ bot.on('message', function(username, user_id, channel_id, message, event) {
           // Send response
           bot.sendMessage({
             to: channel_id,
-            message: body
+            message: 'This account is not linked to any user on this server'
           });
         }
       });
