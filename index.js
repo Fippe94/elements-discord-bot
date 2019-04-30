@@ -3,9 +3,11 @@ const Discord = require('discord.io');
 const request = require('request');
 const xml = require('xml-parse');
 
+const auth = require('./auth.json');
+
 // Create client
 const bot = new Discord.Client({
-  token: process.env.token,
+  token: auth.token,
   autorun: true
 });
 
@@ -21,6 +23,13 @@ bot.on('ready', function() {
       'name': bot.PREFIX + "help | Taters gonna tate" 
     } 
   });
+});
+
+bot.on('disconnect', function(){
+  console.log('Disconnected');
+  bot.connect();
+  console.log('Reconnecting...');
+
 });
 
 // Message received
