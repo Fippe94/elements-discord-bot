@@ -1,48 +1,49 @@
 // Libraries
-const Discord = require('discord.io');
+const Discord = require('discord.js');
 const request = require('request');
 const xml = require('xml-parse');
 
 const auth = require('./auth.json');
 
 // Create client
-const bot = new Discord.Client({
-  token: auth.token,
-  autorun: true
-});
+const client = new Discord.Client();
+
+const element_list = [ "Fire", "Water", "Earth", "Air", "Death", "Life", "Light", "Darkness", "Gravity", "Entropy", "Time", "Aether"];
 
 // Constants
-bot.BASE_URL = 'http://elementscommunity.org/tools/discord-bot/';
-bot.PREFIX = '~';
+client.BASE_URL = 'http://elementscommunity.org/tools/discord-bot/';
+client.PREFIX = '~';
 
 // Client is ready!
-bot.on('ready', function() {
-  console.log('Logged in as %s - %s\n', bot.username, bot.id);
-  bot.setPresence({ 
+client.on('ready', function() {
+  console.log('Logged in as %s - %s\n', client.user.username, client.user.id);
+  client.user.setPresence({ 
     'game': { 
-      'name': bot.PREFIX + "help | Taters gonna tate" 
+      'name': client.PREFIX + "help | Taters gonna tate" 
     } 
   });
 });
 
-bot.on('disconnect', function(){
-  console.log('Disconnected');
-  bot.connect();
+client.on('disconnect', function(event){
+  console.log('Disconnected with code ' + event.code);
+  client.login(auth.token);
   console.log('Reconnecting...');
 
 });
 
 // Message received
-bot.on('message', function(username, user_id, channel_id, message, event) {
+client.on('message', function(message) {
   // Ignore if the message doesn't start with the prefix
-  if (message.substring(0, 1) != bot.PREFIX) {
+  if (message.content.substring(0, 1) != client.PREFIX) {
     return;
   }
+
+  let channel = message.channel;
   
   let forum_username = '';
   
   // Parse message into command and arguments
-  let args = message.substring(1).split(' ');
+  let args = message.content.substring(1).split(' ');
   const cmd = args[0];
   args = args.splice(1);
   
@@ -52,19 +53,14 @@ bot.on('message', function(username, user_id, channel_id, message, event) {
       * SAMPLE
     **/
     case 'ping':
-      bot.sendMessage({
-          to: channel_id,
-          message: 'pong'
-      });
+      channel.send('pong');
       break;
     
     /**
       * HELP
     **/
     case 'help':
-      bot.sendMessage({
-        to: channel_id,
-        message: '',
+      channel.send('', {
         embed: {
           color: 3447003,
           author: {
@@ -82,19 +78,21 @@ bot.on('message', function(username, user_id, channel_id, message, event) {
           'fields': [
             {
               'name': 'General',
-              'value': '\n`' + bot.PREFIX + 'help` Display this help message\n\n━━━━━━━━━━━━━━━━━━━━━━━'
+              'value': '\n`' + client.PREFIX + 'help` Display this help message\n\n' +
+                '`' + client.PREFIX + 'elementcolor <element(s)> ` Change your role (and name color) to the Element(s) specified. ' +
+                'If no Elements specified, your Elemental role will be removed.\n\n━━━━━━━━━━━━━━━━━━━━━━━'
             },
             {
               'name': 'Discord <-> Forum Link',
-              'value': '\n`' + bot.PREFIX + 'link <forum_username>` Link your Discord account to a forum profile\n\n' +
-                '`' + bot.PREFIX + 'verify <code>` Verify ownership of a forum profile\n\n' + 
-                '`' + bot.PREFIX + 'linked` Check if your account is linked to a forum profile\n\n' + 
-                '`' + bot.PREFIX + 'whois <discord_nickname>` Returns the Forum Profile associated with this Discord user\n\n' + 
-                '`' + bot.PREFIX + 'lookup <forum_username>` Returns the Discord Username associated with this Forum Profile\n\n━━━━━━━━━━━━━━━━━━━━━━━'
+              'value': '\n`' + client.PREFIX + 'link <forum_username>` Link your Discord account to a forum profile\n\n' +
+                '`' + client.PREFIX + 'verify <code>` Verify ownership of a forum profile\n\n' + 
+                '`' + client.PREFIX + 'linked` Check if your account is linked to a forum profile\n\n' + 
+                '`' + client.PREFIX + 'whois <discord_nickname>` Returns the Forum Profile associated with this Discord user\n\n' + 
+                '`' + client.PREFIX + 'lookup <forum_username>` Returns the Discord Username associated with this Forum Profile\n\n━━━━━━━━━━━━━━━━━━━━━━━'
             },
             {
               'name': 'Elements',
-              'value': '\n`' + bot.PREFIX + 'card <card name>` Display an Elements card\n\n━━━━━━━━━━━━━━━━━━━━━━━'
+              'value': '\n`' + client.PREFIX + 'card <card name>` Display an Elements card\n\n━━━━━━━━━━━━━━━━━━━━━━━'
             }
           ],
         }
@@ -104,8 +102,7 @@ bot.on('message', function(username, user_id, channel_id, message, event) {
     case "card":
       card_name = args.join('');
 
-      bot.sendMessage({
-        to: channel_id,
+      channel.send('', {
         embed: {
           "image": {
             "url": 'http://elementscommunity.org/images/Cards/' + card_name + '.png'
@@ -114,6 +111,34 @@ bot.on('message', function(username, user_id, channel_id, message, event) {
       });
       break;
 
+    case "elementcolor":
+
+      let new_elements = [];
+      
+      console.log('Changing roles for ' + message.member.displayName);
+      element_list.forEach(element => {
+        role = message.guild.roles.find(role => role.name === (element + " User"));
+        if (role != null){
+          if (args.indexOf(element) >= 0) {
+            message.member.addRole(role);
+            console.log('Added ' + role.name);
+            new_elements.push(element);
+          }
+          else {
+            message.member.removeRole(role);
+            console.log('Removed ' + role.name);
+          }
+        }
+      });
+
+      if (new_elements.length > 0){
+        message.channel.send('You have changed Element' + (new_elements.length > 1 ? 's' : '') + ' to ' + new_elements.join(' and ') + '.'  );
+      }
+      else{
+        message.channel.send('You have removed your Elemental role.');
+      }
+
+      break;
     /**
       * DISCORD-FORUMS LINK
     **/
@@ -124,19 +149,19 @@ bot.on('message', function(username, user_id, channel_id, message, event) {
       
       // Save to database & send forum PM to user
       request.post({
-        url: bot.BASE_URL + "code.php",
+        url: client.BASE_URL + "code.php",
         form: {
           discord_id: user_id,
           forum_username: forum_username
         }, 
       }, (err, res, body) => { 
-        let message = '';
+        let answer = '';
         if (body == 'success') {
           // Respond with confirmation
-          message = 'A Forum PM has been sent to the specified user. Respond with `' + bot.PREFIX + 'verify <code>` using the code from the Forum PM to link your Discord account with your Forum Profile.';
+          answer = 'A Forum PM has been sent to the specified user. Respond with `' + client.PREFIX + 'verify <code>` using the code from the Forum PM to link your Discord account with your Forum Profile.';
         } else {
           // Respond with error
-          message = 'Something went wrong. Please check the username you entered and try again.';
+          answer = 'Something went wrong. Please check the username you entered and try again.';
           
           // Log error
           console.log('link ' + forum_username);
@@ -144,10 +169,7 @@ bot.on('message', function(username, user_id, channel_id, message, event) {
         }
         
         // Send response
-        bot.sendMessage({
-          to: channel_id,
-          message: message
-        });
+          channel.send(answer);
       });
       break;
     
@@ -155,7 +177,7 @@ bot.on('message', function(username, user_id, channel_id, message, event) {
     case 'verify':
       // Check code from database
       request.post({
-        url: bot.BASE_URL + "verify.php", 
+        url: client.BASE_URL + "verify.php", 
         form: {
           discord_id: user_id,
           code: args[0],
@@ -163,10 +185,10 @@ bot.on('message', function(username, user_id, channel_id, message, event) {
       }, (err, res, body) => { 
         if (body == 'success') {
           // Respond with confirmation
-          message = 'Hurray! You have successfully linked your Discord Account with your Forum Profile.';
+          answer = 'Hurray! You have successfully linked your Discord Account with your Forum Profile.';
         } else {
           // Respond with error
-          message = 'Something went wrong. Please check the code you entered and try again.';
+          answer = 'Something went wrong. Please check the code you entered and try again.';
           
           // Log error
           console.log('verify ' + args[0]);
@@ -174,27 +196,24 @@ bot.on('message', function(username, user_id, channel_id, message, event) {
         }
         
         // Send response
-        bot.sendMessage({
-          to: channel_id,
-          message: message
-        });
+        channel.send(answer);
       });
       break;
     
     // Check if account is already linked
     case 'linked':
       request.post({
-        url: bot.BASE_URL + "linked.php", 
+        url: client.BASE_URL + "linked.php", 
         form: {
           discord_id: user_id,
         }, 
       }, (err, res, body) => { 
         if (body == 'success') {
           // Respond with confirmation
-          message = 'No worries! Your Discord Account is already linked to your Forum Profile.';
+          answer = 'No worries! Your Discord Account is already linked to your Forum Profile.';
         } else {
           // Respond with error
-          message = 'Sorry! Your Discord Account is not yet linked to your Forum Profile. Use `' + bot.PREFIX + 'link <forum_username>` to get started.';
+          answer = 'Sorry! Your Discord Account is not yet linked to your Forum Profile. Use `' + client.PREFIX + 'link <forum_username>` to get started.';
           
           // Log error
           console.log('linked - ' + username + ' (' + user_id + ')');
@@ -202,10 +221,7 @@ bot.on('message', function(username, user_id, channel_id, message, event) {
         }
         
         // Send response
-        bot.sendMessage({
-          to: channel_id,
-          message: message
-        });
+        channel.send(answer);
       });
       break;
     
@@ -215,24 +231,18 @@ bot.on('message', function(username, user_id, channel_id, message, event) {
       const discord_id = getDiscordId(discord_nickname);
       
       if (!discord_id) {
-        bot.sendMessage({
-          to: channel_id,
-          message: 'Discord Username not found. Please check your spelling and try again.'
-        });
+        channel.send('Discord Username not found. Please check your spelling and try again.');
         break;
       }
       
       request.post({
-        url: bot.BASE_URL + "whois.php", 
+        url: client.BASE_URL + "whois.php", 
         form: {
           discord_id: discord_id,
         }, 
       }, (err, res, body) => { 
         // Send response
-        bot.sendMessage({
-          to: channel_id,
-          message: body
-        });
+        channel.send(body);
       });
       break;
     
@@ -241,7 +251,7 @@ bot.on('message', function(username, user_id, channel_id, message, event) {
       forum_username = args.join(' ');
       
       request.post({
-        url: bot.BASE_URL + "lookup.php", 
+        url: client.BASE_URL + "lookup.php", 
         form: {
           forum_username: forum_username,
         }, 
@@ -249,16 +259,10 @@ bot.on('message', function(username, user_id, channel_id, message, event) {
         const discord_nickname = getDiscordNickname(body);
         
         if (discord_nickname !== false) {
-          bot.sendMessage({
-            to: channel_id,
-            message: 'This account is linked to: ' + discord_nickname
-          });
+          channel.send('This account is linked to: ' + discord_nickname);
         } else {
           // Send response
-          bot.sendMessage({
-            to: channel_id,
-            message: 'This account is not linked to any user on this server'
-          });
+          channel.send('This account is not linked to any user on this server');
         }
       });
       break;
@@ -272,6 +276,7 @@ bot.on('message', function(username, user_id, channel_id, message, event) {
   }
 });
 
+client.login(auth.token);
 
 /**
   * UTIL FUNCTIONS
@@ -279,7 +284,7 @@ bot.on('message', function(username, user_id, channel_id, message, event) {
 
 // Lookup Discord ID from Discord Nickname
 function getDiscordId(discord_nickname) {
-  for (let user of Object.values(bot.users)) {
+  for (let user of Object.values(client.users)) {
     if (user.username.toLowerCase() == discord_nickname.toLowerCase()) {
       return user.id;
     }
@@ -290,7 +295,7 @@ function getDiscordId(discord_nickname) {
 
 // Lookup Discord Nickname from Discord ID
 function getDiscordNickname(discord_id) {
-  for (let user of Object.values(bot.users)) {
+  for (let user of Object.values(client.users)) {
     if (user.id == discord_id) {
       return user.username;
     }
@@ -319,6 +324,8 @@ let data = [
     'last': '',
   },
 ];
+
+/*
 setInterval(function() {
   let author = '';
   let profile = '';
@@ -397,9 +404,8 @@ function processPotato(idx, body) {
   // TODO: Add potato phrases
   // line_text += phrase;
 
-  bot.sendMessage({
-    to: d.room_id,
-    message: '',
+  let channel = client.channels.get(d.room_id);
+  channel.send( '', {
     embed: {
       color: d.color,
       fields: [{ 
@@ -409,3 +415,4 @@ function processPotato(idx, body) {
     },
   });
 }
+*/
