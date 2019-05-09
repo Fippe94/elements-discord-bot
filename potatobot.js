@@ -80,7 +80,8 @@ client.on('message', function(message) {
               'name': 'General',
               'value': '\n`' + client.PREFIX + 'help` Display this help message\n\n' +
                 '`' + client.PREFIX + 'elementcolor <element(s)> ` Change your role (and name color) to the Element(s) specified. ' +
-                'If no Elements specified, your Elemental role will be removed.\n\n━━━━━━━━━━━━━━━━━━━━━━━'
+                'If no Elements specified, your Elemental role will be removed.\n\n' +
+                '`' + client.PREFIX +'roll XdY` Rolls X dice with Y sides.\n\n━━━━━━━━━━━━━━━━━━━━━━━'
             },
             {
               'name': 'Discord <-> Forum Link',
@@ -137,6 +138,62 @@ client.on('message', function(message) {
       else{
         message.channel.send('You have removed your Elemental role.');
       }
+
+      break;
+
+
+    case 'roll':
+
+      if (args.length == 0){
+        args = ['6d10'];
+      }
+      
+      if (args.length != 1){
+        message.channel.send('This command requires exactly 1 argument.' );
+        break;
+      }
+
+      let arg = args[0].toLowerCase();
+
+      let d_index = arg.indexOf('d')
+
+      
+      if (d_index < 0) {
+        message.channel.send('You need a \'d\' in your argument.');
+        break;
+      }
+
+      let dice_args = arg.split('d');
+
+
+      if (isNaN(dice_args[0]) || isNaN(dice_args[1])){
+        message.channel.send('Dice uses numbers, not other symbols.');
+        break;
+      }
+
+      amount = Number(dice_args[0]);
+      sides = Number(dice_args[1]);
+
+      if (!Number.isInteger(Number(amount)) || !Number.isInteger(Number(sides))) {
+        message.channel.send('The number of dice and their sides must be integers.');
+        break;
+      }
+
+      if (amount > 100 || amount < 1 || sides > 100 || sides < 1){
+        message.channel.send('The number of dice and their sides must be between 1 and 100.');
+        break;
+      }
+
+      let res = [];
+      let sum = 0;
+
+      for (let index = 0; index < amount; index++) {
+        let roll = Math.floor(Math.random() * sides + 1);
+        res.push(roll);        
+        sum += roll;
+      }
+
+      message.channel.send('(' + amount + 'd' + sides + ') ' + res.join(' + ') + ' = **' + sum + '**' );
 
       break;
     /**
