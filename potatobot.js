@@ -38,6 +38,10 @@ client.on('message', function(message) {
     return;
   }
 
+  let user_id = message.author.id;
+
+  let username = message.author.username;
+
   let channel = message.channel;
   
   let forum_username = '';
@@ -285,7 +289,7 @@ client.on('message', function(message) {
     // Returns the Forum Profile associated with this Discord user
     case 'whois':
       const discord_nickname = args.join(' ');
-      const discord_id = getDiscordId(discord_nickname);
+      const discord_id = getDiscordId(discord_nickname, message);
       
       if (!discord_id) {
         channel.send('Discord Username not found. Please check your spelling and try again.');
@@ -313,15 +317,19 @@ client.on('message', function(message) {
           forum_username: forum_username,
         }, 
       }, (err, res, body) => {
-        const discord_nickname = getDiscordNickname(body);
+        console.log(body)
+        member = message.guild.members.get(body)
+            
+          console.log(member)
         
-        if (discord_nickname !== false) {
-          channel.send('This account is linked to: ' + discord_nickname);
-        } else {
-          // Send response
-          channel.send('This account is not linked to any user on this server');
-        }
-      });
+          if (member) {
+
+            channel.send('This account is linked to: ' + member.user.username);
+          } else {
+            // Send response
+            channel.send('This account is not linked to any user on this server');
+          }
+        });
       break;
     
     /**
@@ -340,25 +348,22 @@ client.login(auth.token);
 **/
 
 // Lookup Discord ID from Discord Nickname
-function getDiscordId(discord_nickname) {
-  for (let user of Object.values(client.users)) {
-    if (user.username.toLowerCase() == discord_nickname.toLowerCase()) {
-      return user.id;
+function getDiscordId(discord_nickname, message) {
+  //console.log(client.users);
+  /*for (var id in client.users) {
+    console.log(id);
+    console.log(client.users[id]);
+    if (client.users[id].username.toLowerCase() == discord_nickname.toLowerCase()) {
+      return id;
     }
+  }*/
+  console.log(discord_nickname);
+  let user = message.guild.members.find( x => {x.displayName === discord_nickname});
+  console.log(user);
+  if (user == null){
+    return user;
   }
-  
-  return false;
-}
-
-// Lookup Discord Nickname from Discord ID
-function getDiscordNickname(discord_id) {
-  for (let user of Object.values(client.users)) {
-    if (user.id == discord_id) {
-      return user.username;
-    }
-  }
-  
-  return false;
+  return user.user.id;
 }
 
 /**
